@@ -28,14 +28,16 @@ public class UserManager {
 	@Inject
 	private UserContext userContext;
 
+	@Path("/register")
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	public void registerUser(User newUser) {
+		newUser.setRole("User");
 		userDAO.addUser(newUser);
 		userContext.setCurrentUser(newUser);
 	}
 	
-	@Path("login")
+	@Path("/login")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public Response loginUser(User user) {
@@ -43,16 +45,26 @@ public class UserManager {
         if (!isUserValid) {
             return Response.status(HttpURLConnection.HTTP_UNAUTHORIZED).build();
         }
-        userContext.setCurrentUser(user);
+        userContext.setCurrentUser(userDAO.findUserByName(user.getUsername()));
         return Response.ok().build();
     }
 	
-	@Path("allusers")
+	@Path("/allusers")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<User> getAllUsers() {
 		List<User> users = new ArrayList<User>();
 		users.addAll(userDAO.getAllUsers());
 		return users;
+	}
+	
+	@Path("/currentuser")
+	@GET
+	@Produces(MediaType.TEXT_PLAIN)
+	public String getCurrentUser() {
+		if (userContext.getCurrentUser() == null) {
+			return null;
+		}
+		return userContext.getCurrentUser().getUsername();
 	}
 }

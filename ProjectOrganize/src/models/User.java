@@ -37,9 +37,7 @@ public class User {
 	@JoinColumn(name = "ProjectID")
 	private Project project;
 	
-	@ManyToOne
-	@JoinColumn(name = "RoleID")
-	private Role role;
+	private String role;
 	
 	@OneToMany(mappedBy = "author")
 	private List<Comment> comments;
@@ -92,11 +90,11 @@ public class User {
 		this.tasks = tasks;
 	}
 
-	public Role getRole() {
+	public String getRole() {
 		return role;
 	}
 
-	public void setRole(Role role) {
+	public void setRole(String role) {
 		this.role = role;
 	}
 

@@ -44,9 +44,9 @@ public class Task implements Serializable{
 		      inverseJoinColumns={@JoinColumn(name="UserId", referencedColumnName="id")})
 	private List<User> users;
 	
-	@ManyToOne
-	@JoinColumn(name = "StatusID")
-	private Status status;
+//	@ManyToOne
+//	@JoinColumn(name = "StatusID")
+	private String status;
 	
 	@ManyToOne
 	@JoinColumn(name = "ProjectID")
@@ -95,11 +95,11 @@ public class Task implements Serializable{
 		this.users = users;
 	}
 
-	public Status getStatus() {
+	public String getStatus() {
 		return status;
 	}
 
-	public void setStatus(Status status) {
+	public void setStatus(String status) {
 		this.status = status;
 	}
 
