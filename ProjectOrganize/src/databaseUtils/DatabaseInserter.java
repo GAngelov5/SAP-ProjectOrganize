@@ -9,6 +9,8 @@ import javax.ejb.Startup;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+
+import models.Role;
 //import models.Role;
 import models.User;
 import dao.UserDAO;
@@ -31,16 +33,25 @@ public class DatabaseInserter {
 			user.setPassword("admin");
 			user.setFullName("Admin Admin");
 			user.setEmail("admin@admin.com");
+			user.setRole(Role.ADMINISTRATOR);
 			//Role admin = new Role();
 			//admin.setName("Administrator");
 			//em.persist(admin);
 			//user.setRole(admin);
-			user.setRole("Administrator");
 			
 			userDao.addUser(user);
 		}
 	
 	}
+
+	
+//	@PostConstruct
+//	public void deleteAdmi() {
+//		User u = new User();
+//		if ((u = userDao.findUserByName("admin")) != null) {
+//			userDao.removeUserById(u.getId());
+//		}
+//	}
 	
 //	private void insertRoles() {
 //		Role admin = new Role();

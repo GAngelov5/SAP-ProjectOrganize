@@ -44,8 +44,6 @@ public class Task implements Serializable{
 		      inverseJoinColumns={@JoinColumn(name="UserId", referencedColumnName="id")})
 	private List<User> users;
 	
-//	@ManyToOne
-//	@JoinColumn(name = "StatusID")
 	private String status;
 	
 	@ManyToOne

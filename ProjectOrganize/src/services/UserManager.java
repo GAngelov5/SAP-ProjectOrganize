@@ -20,7 +20,7 @@ import dao.ProjectDAO;
 import dao.UserDAO;
 
 @Stateless
-@Path("user")
+@Path("/user")
 public class UserManager {
 
 	@EJB
@@ -53,7 +53,7 @@ public class UserManager {
         return Response.ok().build();
     }
 	
-	@Path("/allusers")
+	@Path("/allUsers")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<User> getAllUsers() {
