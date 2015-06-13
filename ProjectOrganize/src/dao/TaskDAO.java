@@ -7,6 +7,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
+import javax.ws.rs.core.Response;
 
 import models.Project;
 import models.Task;
@@ -63,4 +64,24 @@ public class TaskDAO {
 	// return query.getResultList();
 	// }
 	// /////////////////////
+	
+	public Response changeStatus (Task task,String newStatus) {
+		long taskId = task.getId();
+		String textQuery = "UPDATE Task SET status =:newStatus WHERE t.id=:taskId";
+		TypedQuery<Task> query = em.createNamedQuery(textQuery,Task.class)
+					.setParameter("newStatus", newStatus)
+					.setParameter("taskId", taskId);
+		return Response.ok().build();
+	}
+	
+	public Long findUserTaskNumberByStatus(Long userId, String status) {
+		String textQuery = "SELECT count(task.id) FROM Task task "
+				+ "where task.assignee.id =:userId and "
+				+ "issue.status.name=:status";
+		TypedQuery<Long> query = em.createQuery(textQuery, Long.class);
+		query.setParameter("userId", userId);
+		query.setParameter("status", status);
+		
+		return query.getSingleResult();
+	}
 }
