@@ -1,16 +1,21 @@
 package dao;
 
 import java.util.Collection;
+import java.util.List;
 
+import javax.ejb.Singleton;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
 import models.Project;
+import models.User;
 
-
+@Singleton
 public class ProjectDAO {
 	
+	@PersistenceContext
 	private EntityManager em;
 	
 	public ProjectDAO() {
@@ -82,6 +87,10 @@ public class ProjectDAO {
 	public void removeProject(Project project) {
 		long id = project.getId();
 		em.remove(this.findProjectById(id));
+	}
+	
+	public List<User> getUsersFromProject(Project project) {
+		return project.getUsers();
 	}
 	
 }

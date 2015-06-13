@@ -16,6 +16,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import models.User;
+import dao.ProjectDAO;
 import dao.UserDAO;
 
 @Stateless
@@ -24,10 +25,13 @@ public class UserManager {
 
 	@EJB
 	private UserDAO userDAO;
+	
+	@EJB
+	private ProjectDAO projectDao;
 
 	@Inject
 	private UserContext userContext;
-
+	
 	@Path("/register")
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -58,7 +62,7 @@ public class UserManager {
 		return users;
 	}
 	
-	@Path("/currentuser")
+	@Path("/currentUser")
 	@GET
 	@Produces(MediaType.TEXT_PLAIN)
 	public String getCurrentUser() {
