@@ -48,7 +48,7 @@ public class TaskDAO {
 	public Collection<Task> getAllTasks(Project project) {
 		long projectId = project.getId();
 		String textQuery = "SELECT t FROM Task t WHERE t.ProjectId =:projectId";
-		TypedQuery<Task> query = em.createNamedQuery(textQuery, Task.class)
+		TypedQuery<Task> query = em.createQuery(textQuery, Task.class)
 				.setParameter("projectId", projectId);
 		try {
 			return query.getResultList();
@@ -60,7 +60,7 @@ public class TaskDAO {
 	public Task findTaskByName(String taskName) {
 		Task t = new Task();
 		String textQuery = "SELECT t FROM Task t WHERE t.name = :taskName";
-		TypedQuery<Task> query = em.createNamedQuery(textQuery, Task.class)
+		TypedQuery<Task> query = em.createQuery(textQuery, Task.class)
 				.setParameter("taskName", taskName);
 		if (query.getSingleResult() != null) {
 			t = query.getSingleResult();
@@ -74,8 +74,8 @@ public class TaskDAO {
 
 	public Response changeStatus(Task task, String newStatus) {
 		long taskId = task.getId();
-		String textQuery = "UPDATE Task SET status =:newStatus WHERE t.id=:taskId";
-		TypedQuery<Task> query = em.createNamedQuery(textQuery, Task.class)
+		String textQuery = "UPDATE Task t SET t.status = :newStatus WHERE t.id =:taskId";
+		TypedQuery<Task> query = em.createQuery(textQuery, Task.class)
 				.setParameter("newStatus", newStatus)
 				.setParameter("taskId", taskId);
 		return Response.ok().build();

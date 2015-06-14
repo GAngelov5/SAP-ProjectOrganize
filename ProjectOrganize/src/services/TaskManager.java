@@ -1,8 +1,8 @@
 package services;
 
 import java.util.Collection;
+import java.util.Date;
 
-import javax.annotation.security.PermitAll;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -15,9 +15,15 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import models.Comment;
 import models.Status;
 import models.Task;
 import models.User;
+
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
+
+import dao.CommentDAO;
 import dao.TaskDAO;
 import dao.UserDAO;
 
@@ -30,6 +36,9 @@ public class TaskManager {
 	
 	@EJB
 	private UserDAO userDao;
+	
+	@EJB
+	private CommentDAO commentDao;
 	
 	@Inject
 	private UserContext userContext;
@@ -46,20 +55,17 @@ public class TaskManager {
 	@Path("/newTask")
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response createNewTask(Task newTask) {
-		newTask.setStatus(Status.START);
+		newTask.setStatus(Status.INITIAL);
 		taskDao.addTask(newTask);
 		return Response.ok().build();
 	}
 	
 	@POST
-	@Path("/assignTask")
-	@Consumes(MediaType.APPLICATION_JSON)
-	public Response assignTask(String userName, String taskName) {
-		User u = userDao.findUserByName(userName);
-		Task t = taskDao.findTaskByName(taskName);
-		if (t != null && u != null) {
-			taskDao.assignUserToTask(t, u);
-		}
+	@Path("/assignTask/{taskId}")
+	@Consumes(MediaType.TEXT_PLAIN)
+	public Response assignTask(User u, @PathParam("taskId") Long taskId) {
+		Task t = taskDao.findById(taskId);
+		taskDao.assignUserToTask(t, u);
 		return Response.ok().build();
 	}
 	
@@ -81,6 +87,37 @@ public class TaskManager {
 	@Path("/edit")
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response editIssue(Task task) { 
+		
+		return Response.ok().build();
+	}
+	
+	
+	//Need to take only 1 parameter !! 
+	@POST
+	@Path("/changeStatus/{taskId}")
+	@Consumes(MediaType.TEXT_PLAIN)
+	public Response changeStatus(String status, @PathParam("taskId") Long taskId) {
+		System.out.println(status);
+		Task t = taskDao.findById(taskId);
+		if (t != null && t.getStatus() != status) {
+			taskDao.changeStatus(t, status);
+			return Response.ok().build();
+		}
+		return Response.ok().build();
+	}
+	
+	@POST
+	@Path("/comment/{taskId}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response commentTask(Comment comment, @PathParam("taskId") Long taskId) {
+		Task t = taskDao.findById(taskId);
+		if (t != null) {
+			comment.setTask(t);
+			comment.setDateAndHour(new Date());
+			comment.setAuthor(userContext.getCurrentUser());
+			t.getComment().add(comment);
+			return Response.ok().build();
+		}
 		return Response.ok().build();
 	}
 }
