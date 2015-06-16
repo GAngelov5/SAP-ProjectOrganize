@@ -31,10 +31,9 @@ public class CommentDAO {
 	}
 
 	public Collection<Comment> getAllComentsByTask(Task task) {
-		long taskId = task.getId();
-		String textQuery = "SELECT c FROM Comment c WHERE c.TaskId =:taskId";
+		String textQuery = "SELECT c FROM Comment c WHERE c.task =:task";
 		TypedQuery<Comment> query = em.createQuery(textQuery, Comment.class)
-				.setParameter("taskId", taskId);
+				.setParameter("task", task);
 		try {
 			return query.getResultList();
 		} catch (NoResultException e) {
@@ -44,7 +43,7 @@ public class CommentDAO {
 
 	public Collection<Comment> getAllCommentsByUser(User user) {
 		long userId = user.getId();
-		String textQuery = "SELECT c FROM Comment c WHERE c.UserId =:userId";
+		String textQuery = "SELECT c FROM Comment c WHERE c.userId =:userId";
 		TypedQuery<Comment> query = em.createQuery(textQuery, Comment.class)
 				.setParameter("userId", userId);
 		try {
@@ -65,5 +64,6 @@ public class CommentDAO {
 			return null;
 		}
 	}
+	
 
 }

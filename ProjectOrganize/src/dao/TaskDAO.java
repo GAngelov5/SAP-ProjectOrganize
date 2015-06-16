@@ -7,6 +7,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
+import javax.persistence.Query;
 import javax.ws.rs.core.Response;
 
 import models.Project;
@@ -68,17 +69,41 @@ public class TaskDAO {
 		return t;
 	}
 
-	public void assignUserToTask(Task task, User user) {
-		task.getUsers().add(user);
+	public int assignUserToTask(Task task, User user) {
+		System.out.println("vleznah");
+		Collection<Task> tasksForUser = getAllTaskForUser(user);
+		long taskId = task.getId();
+		String textQuery = "UPDATE Task t SET t.users = :moreUsers WHERE t.id = :taskId";
+		TypedQuery<Task> query = em.createQuery(textQuery, Task.class)
+				.setParameter("moreUsers", tasksForUser)
+				.setParameter("taskId", taskId);
+
+		return query.executeUpdate();
+
 	}
 
-	public Response changeStatus(Task task, String newStatus) {
+	public Collection<Task> getAllTaskForUser(User u) {
+		int userId = u.getId();
+		String textQuery = "SELECT t FROM Task t WHERE t.id = :userId";
+		TypedQuery<Task> query = em.createQuery(textQuery, Task.class)
+				.setParameter("userId", userId);
+
+		try {
+			return query.getResultList();
+		} catch (NoResultException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public int changeStatus(Task task, String newStatus) {
 		long taskId = task.getId();
-		String textQuery = "UPDATE Task t SET t.status = :newStatus WHERE t.id =:taskId";
+		String textQuery = "UPDATE Task t SET t.status = :newStatus WHERE t.id = :taskId";
 		TypedQuery<Task> query = em.createQuery(textQuery, Task.class)
 				.setParameter("newStatus", newStatus)
 				.setParameter("taskId", taskId);
-		return Response.ok().build();
+
+		return query.executeUpdate();
 	}
 
 	public Long findUserTaskNumberByStatus(Long userId, String status) {
@@ -91,4 +116,6 @@ public class TaskDAO {
 
 		return query.getSingleResult();
 	}
+	
+	
 }

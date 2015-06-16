@@ -63,9 +63,14 @@ public class TaskManager {
 	@POST
 	@Path("/assignTask/{taskId}")
 	@Consumes(MediaType.TEXT_PLAIN)
-	public Response assignTask(User u, @PathParam("taskId") Long taskId) {
+	public Response assignTask(String username, @PathParam("taskId") Long taskId) {
 		Task t = taskDao.findById(taskId);
-		taskDao.assignUserToTask(t, u);
+		System.out.println(t.getName());
+		User u = userDao.findUserByName(username);
+		if (u != null) {
+			if (taskDao.assignUserToTask(t, u) == 1);
+				return Response.ok().build();
+		}
 		return Response.ok().build();
 	}
 	
@@ -73,7 +78,7 @@ public class TaskManager {
 	@Path("/allTaskForUser")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Collection<Task> getAllTasksForUser() {
-		return userContext.getCurrentUser().getTasks();
+		return taskDao.getAllTaskForUser(userContext.getCurrentUser());
 	}
 	
 	@GET
@@ -97,11 +102,10 @@ public class TaskManager {
 	@Path("/changeStatus/{taskId}")
 	@Consumes(MediaType.TEXT_PLAIN)
 	public Response changeStatus(String status, @PathParam("taskId") Long taskId) {
-		System.out.println(status);
 		Task t = taskDao.findById(taskId);
 		if (t != null && t.getStatus() != status) {
-			taskDao.changeStatus(t, status);
-			return Response.ok().build();
+			if (taskDao.changeStatus(t, status) == 1);
+				return Response.ok().build();
 		}
 		return Response.ok().build();
 	}
@@ -115,9 +119,17 @@ public class TaskManager {
 			comment.setTask(t);
 			comment.setDateAndHour(new Date());
 			comment.setAuthor(userContext.getCurrentUser());
-			t.getComment().add(comment);
+			commentDao.addComment(comment);
 			return Response.ok().build();
 		}
 		return Response.ok().build();
+	}
+	
+	@GET
+	@Path("/comments/{taskId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Collection<Comment> getAllCommentsForTask(@PathParam("taskId") Long id) {
+		Task t = taskDao.findById(id);
+		return commentDao.getAllComentsByTask(t);
 	}
 }
