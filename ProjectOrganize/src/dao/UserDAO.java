@@ -9,6 +9,8 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
+import models.Role;
+import models.Task;
 import models.User;
 
 @Singleton
@@ -16,11 +18,11 @@ public class UserDAO {
 
 	@PersistenceContext
 	private EntityManager em;
-	
+
 	public UserDAO() {
-		
+
 	}
-	 
+
 	public UserDAO(EntityManager em) {
 		this.em = em;
 	}
@@ -37,7 +39,7 @@ public class UserDAO {
 		query.setParameter("password", getHashedPassword(password));
 		return queryUser(query) != null;
 	}
-	
+
 	public User findUserById(int id) {
 		return em.find(User.class, id);
 	}
@@ -48,9 +50,9 @@ public class UserDAO {
 		query.setParameter("userName", userName);
 		return queryUser(query);
 	}
-	
+
 	public void removeUserById(int id) {
-		em.remove(this.findUserById(id));
+		em.remove(findUserById(id));
 	}
 
 	private User queryUser(TypedQuery<User> query) {
@@ -59,6 +61,15 @@ public class UserDAO {
 		} catch (Exception e) {
 			return null;
 		}
+	}
+
+	public int changeUserRole(User u) {
+		int userId = u.getId();
+		String textQuery = "UPDATE User u SET t.role = :adminRole WHERE u.id =:userId";
+		TypedQuery<User> query = em.createQuery(textQuery, User.class)
+				.setParameter("userId", userId)
+				.setParameter("adminRole", Role.ADMINISTRATOR);
+		return query.executeUpdate();
 	}
 
 	private String getHashedPassword(String password) {
@@ -81,5 +92,4 @@ public class UserDAO {
 		}
 	}
 
-	
 }

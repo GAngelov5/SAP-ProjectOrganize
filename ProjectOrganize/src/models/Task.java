@@ -53,6 +53,10 @@ public class Task implements Serializable{
 	@OneToMany(mappedBy = "task")
 	private List<Comment> comment;
 	
+	@ManyToOne
+	@JoinColumn(name = "ReporterID")
+	private User reporter;
+	
 	public int getId() {
 		return id;
 	}
@@ -115,6 +119,14 @@ public class Task implements Serializable{
 
 	public void setComment(List<Comment> comment) {
 		this.comment = comment;
+	}
+
+	public User getReporter() {
+		return reporter;
+	}
+
+	public void setReporter(User reporter) {
+		this.reporter = reporter;
 	}
 	
 	

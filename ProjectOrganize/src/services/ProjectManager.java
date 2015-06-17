@@ -6,6 +6,7 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -28,7 +29,6 @@ public class ProjectManager {
 	@EJB
 	private UserDAO userDao;
 	
-	
 	@POST
 	@Path("/createProject")
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -41,8 +41,15 @@ public class ProjectManager {
 	@Path("/addMember")
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response addMemberToProject(User user) {
-		
 		userDao.addUser(user);
+		return Response.ok().build();
+	}
+	
+	@DELETE
+	@Path("/deleteMember")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response deleteMemberFromProject(User user) {
+		userDao.removeUserById(user.getId());
 		return Response.ok().build();
 	}
 	

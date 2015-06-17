@@ -1,5 +1,6 @@
 package models;
 
+import java.io.Serializable;
 import java.util.List;
 
 import javax.persistence.Entity;
@@ -16,8 +17,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @Entity
 @Table(name = "User")
-public class User {
-	
+public class User implements Serializable{
+
+	private static final long serialVersionUID = 693128496825745393L;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int id;
@@ -41,6 +44,9 @@ public class User {
 	
 	@OneToMany(mappedBy = "author")
 	private List<Comment> comments;
+	
+	@OneToMany(mappedBy = "reporter")
+	private List<Task> importantTasks;
 	
 	public int getId() {
 		return id;
@@ -113,6 +119,13 @@ public class User {
 	public void setComments(List<Comment> comments) {
 		this.comments = comments;
 	}
-	
+
+	public List<Task> getImportantTasks() {
+		return importantTasks;
+	}
+
+	public void setImportantTasks(List<Task> importantTasks) {
+		this.importantTasks = importantTasks;
+	}
 	
 }

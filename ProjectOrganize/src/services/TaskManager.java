@@ -19,10 +19,6 @@ import models.Comment;
 import models.Status;
 import models.Task;
 import models.User;
-
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
-
 import dao.CommentDAO;
 import dao.TaskDAO;
 import dao.UserDAO;
@@ -47,7 +43,7 @@ public class TaskManager {
 	@GET
 	@Path("/id/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Task getTaskById(@PathParam("id") Long id) {
+	public Task getTaskById(@PathParam("id") int id) {
 		return taskDao.findById(id);
 	}
 	
@@ -62,14 +58,14 @@ public class TaskManager {
 	
 	@POST
 	@Path("/assignTask/{taskId}")
-	@Consumes(MediaType.TEXT_PLAIN)
-	public Response assignTask(String username, @PathParam("taskId") Long taskId) {
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response assignTask(User user, @PathParam("taskId") int taskId) {
 		Task t = taskDao.findById(taskId);
 		System.out.println(t.getName());
-		User u = userDao.findUserByName(username);
+		User u = userDao.findUserByName(user.getUsername());
 		if (u != null) {
-			if (taskDao.assignUserToTask(t, u) == 1);
-				return Response.ok().build();
+			taskDao.assignUserToTask(t, u);
+			return Response.ok().build();
 		}
 		return Response.ok().build();
 	}
@@ -91,17 +87,17 @@ public class TaskManager {
 	@POST
 	@Path("/edit")
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response editIssue(Task task) { 
-		
+	public Response editTask(Task task) { 
+		taskDao.editTask(task);
 		return Response.ok().build();
 	}
 	
 	
-	//Need to take only 1 parameter !! 
+	//Changing status of task INITIAL -> IN_PROGRESS
 	@POST
 	@Path("/changeStatus/{taskId}")
 	@Consumes(MediaType.TEXT_PLAIN)
-	public Response changeStatus(String status, @PathParam("taskId") Long taskId) {
+	public Response changeStatus(String status, @PathParam("taskId") int taskId) {
 		Task t = taskDao.findById(taskId);
 		if (t != null && t.getStatus() != status) {
 			if (taskDao.changeStatus(t, status) == 1);
@@ -110,10 +106,13 @@ public class TaskManager {
 		return Response.ok().build();
 	}
 	
+	
+	//Adding and showing comments
+	
 	@POST
 	@Path("/comment/{taskId}")
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response commentTask(Comment comment, @PathParam("taskId") Long taskId) {
+	public Response commentTask(Comment comment, @PathParam("taskId") int taskId) {
 		Task t = taskDao.findById(taskId);
 		if (t != null) {
 			comment.setTask(t);
@@ -126,10 +125,31 @@ public class TaskManager {
 	}
 	
 	@GET
-	@Path("/comments/{taskId}")
+	@Path("/allComments/{taskId}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Collection<Comment> getAllCommentsForTask(@PathParam("taskId") Long id) {
+	public Collection<Comment> getAllCommentsForTask(@PathParam("taskId") int id) {
 		Task t = taskDao.findById(id);
 		return commentDao.getAllComentsByTask(t);
 	}
+	
+	
+	//Mark important tasks
+	@POST
+	@Path("/markTask/{taskId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response markImportantTask(@PathParam("taskId") int taskId) {
+		Task t = taskDao.findById(taskId);
+		t.setReporter(userContext.getCurrentUser());
+		taskDao.editTask(t);
+		return Response.ok().build();
+	}
+	
+	@GET
+	@Path("/markedTask")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Collection<Task> getMarkedTasksForUser() {
+		return taskDao.getMarkedTasks(userContext.getCurrentUser());
+	}
+	
+	
 }

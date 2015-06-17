@@ -24,7 +24,7 @@ import dao.UserDAO;
 public class UserManager {
 
 	@EJB
-	private UserDAO userDAO;
+	private UserDAO userDao;
 	
 	@EJB
 	private ProjectDAO projectDao;
@@ -37,7 +37,7 @@ public class UserManager {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public void registerUser(User newUser) {
 		newUser.setRole("User");
-		userDAO.addUser(newUser);
+		userDao.addUser(newUser);
 		userContext.setCurrentUser(newUser);
 	}
 	
@@ -45,11 +45,11 @@ public class UserManager {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public Response loginUser(User user) {
-        boolean isUserValid = userDAO.validateUserCredentials(user.getUsername(), user.getPassword());
+        boolean isUserValid = userDao.validateUserCredentials(user.getUsername(), user.getPassword());
         if (!isUserValid) {
             return Response.status(HttpURLConnection.HTTP_UNAUTHORIZED).build();
         }
-        userContext.setCurrentUser(userDAO.findUserByName(user.getUsername()));
+        userContext.setCurrentUser(userDao.findUserByName(user.getUsername()));
         return Response.ok().build();
     }
 	
@@ -58,7 +58,7 @@ public class UserManager {
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<User> getAllUsers() {
 		List<User> users = new ArrayList<User>();
-		users.addAll(userDAO.getAllUsers());
+		users.addAll(userDao.getAllUsers());
 		return users;
 	}
 	
@@ -71,4 +71,24 @@ public class UserManager {
 		}
 		return userContext.getCurrentUser().getUsername();
 	}
+	
+	//admin can do it
+	@Path("/createUser")
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response createNewUser(User u) {
+		userDao.addUser(u);
+		return Response.ok().build();
+	}
+	
+	//admin make regular user administrator
+	@Path("/makeAdmin")
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response makeUserAdmin(User u) {
+		userDao.changeUserRole(u);
+		return Response.ok().build();
+	}
+	
+	
 }

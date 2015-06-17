@@ -1,5 +1,6 @@
 package dao;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.ejb.Singleton;
@@ -7,8 +8,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
-import javax.persistence.Query;
-import javax.ws.rs.core.Response;
 
 import models.Project;
 import models.Task;
@@ -21,7 +20,6 @@ public class TaskDAO {
 	private EntityManager em;
 
 	public TaskDAO() {
-
 	}
 
 	public TaskDAO(EntityManager em) {
@@ -32,7 +30,7 @@ public class TaskDAO {
 		em.persist(task);
 	}
 
-	public Task findById(Long id) {
+	public Task findById(int id) {
 		return em.find(Task.class, id);
 	}
 
@@ -69,6 +67,7 @@ public class TaskDAO {
 		return t;
 	}
 
+	// ne raboti
 	public int assignUserToTask(Task task, User user) {
 		System.out.println("vleznah");
 		Collection<Task> tasksForUser = getAllTaskForUser(user);
@@ -91,9 +90,8 @@ public class TaskDAO {
 		try {
 			return query.getResultList();
 		} catch (NoResultException e) {
-			e.printStackTrace();
+			return null;
 		}
-		return null;
 	}
 
 	public int changeStatus(Task task, String newStatus) {
@@ -116,6 +114,22 @@ public class TaskDAO {
 
 		return query.getSingleResult();
 	}
-	
-	
+
+	// Update information to database
+	public void editTask(Task task) {
+		em.merge(task);
+	}
+
+	public Collection<Task> getMarkedTasks(User user) {
+		String txtQuery = "SELECT t From Task t WHERE t.reporter.id = :userId";
+		TypedQuery<Task> query = em.createQuery(txtQuery, Task.class)
+				.setParameter("userId", user.getId());
+		
+		try {
+			return query.getResultList();
+		} catch (NoResultException e){
+			return null;
+		}
+	}
+
 }
