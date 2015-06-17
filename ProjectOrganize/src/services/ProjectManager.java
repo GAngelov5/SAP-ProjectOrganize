@@ -19,6 +19,7 @@ import models.User;
 import dao.ProjectDAO;
 import dao.UserDAO;
 
+//Admin can do this
 @Stateless
 @Path("/projects")
 public class ProjectManager {

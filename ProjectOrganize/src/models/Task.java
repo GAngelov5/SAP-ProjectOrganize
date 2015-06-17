@@ -57,6 +57,9 @@ public class Task implements Serializable{
 	@JoinColumn(name = "ReporterID")
 	private User reporter;
 	
+	@OneToMany(mappedBy ="task")
+	private List<TaskHistory> updates;
+	
 	public int getId() {
 		return id;
 	}
