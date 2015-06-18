@@ -135,7 +135,7 @@ public class TaskManager {
 	
 	//Mark important tasks
 	@POST
-	@Path("/markTask/{taskId}")
+	@Path("/admin/markTask/{taskId}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response markImportantTask(@PathParam("taskId") int taskId) {
 		Task t = taskDao.findById(taskId);
@@ -145,7 +145,7 @@ public class TaskManager {
 	}
 	
 	@GET
-	@Path("/markedTask")
+	@Path("/admin/markedTask")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Collection<Task> getMarkedTasksForUser() {
 		return taskDao.getMarkedTasks(userContext.getCurrentUser());

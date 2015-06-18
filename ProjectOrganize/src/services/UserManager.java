@@ -82,7 +82,7 @@ public class UserManager {
 	}
 	
 	//admin make regular user administrator
-	@Path("/makeAdmin")
+	@Path("/admin/makeAdmin")
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response makeUserAdmin(User u) {

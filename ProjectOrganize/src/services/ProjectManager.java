@@ -21,7 +21,7 @@ import dao.UserDAO;
 
 //Admin can do this
 @Stateless
-@Path("/projects")
+@Path("/admin/projects")
 public class ProjectManager {
 	
 	@EJB

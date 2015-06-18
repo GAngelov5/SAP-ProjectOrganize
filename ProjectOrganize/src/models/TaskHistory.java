@@ -36,6 +36,4 @@ public class TaskHistory implements Serializable{
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date updateDate;
 	
-	
-	
 }
