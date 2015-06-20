@@ -34,33 +34,9 @@ public class DatabaseInserter {
 			user.setFullName("Admin Admin");
 			user.setEmail("admin@admin.com");
 			user.setRole(Role.ADMINISTRATOR);
-			//Role admin = new Role();
-			//admin.setName("Administrator");
-			//em.persist(admin);
-			//user.setRole(admin);
-			
 			userDao.addUser(user);
 		}
 	
-	}
-
-	
-//	@PostConstruct
-//	public void deleteAdmi() {
-//		User u = new User();
-//		if ((u = userDao.findUserByName("admin")) != null) {
-//			userDao.removeUserById(u.getId());
-//		}
-//	}
-	
-//	private void insertRoles() {
-//		Role admin = new Role();
-//		admin.setName("Administrator");
-//		Role user = new Role();
-//		user.setName("User");
-//		em.persist(admin);
-//		em.persist(user);
-//			
-//	}	
+	}	
 	
 }

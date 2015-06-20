@@ -57,7 +57,7 @@ public class Task implements Serializable{
 	@JoinColumn(name = "ReporterID")
 	private User reporter;
 	
-	@OneToMany(mappedBy ="task")
+	@OneToMany(mappedBy ="currentTask")
 	private List<TaskHistory> updates;
 	
 	public int getId() {
@@ -130,6 +130,75 @@ public class Task implements Serializable{
 
 	public void setReporter(User reporter) {
 		this.reporter = reporter;
+	}
+
+	public List<TaskHistory> getUpdates() {
+		return updates;
+	}
+
+	public void setUpdates(List<TaskHistory> updates) {
+		this.updates = updates;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((comment == null) ? 0 : comment.hashCode());
+		result = prime * result
+				+ ((dateOfExectuon == null) ? 0 : dateOfExectuon.hashCode());
+		result = prime * result
+				+ ((description == null) ? 0 : description.hashCode());
+		result = prime * result + id;
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result
+				+ ((reporter == null) ? 0 : reporter.hashCode());
+		result = prime * result + ((status == null) ? 0 : status.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Task other = (Task) obj;
+		if (comment == null) {
+			if (other.comment != null)
+				return false;
+		} else if (!comment.equals(other.comment))
+			return false;
+		if (dateOfExectuon == null) {
+			if (other.dateOfExectuon != null)
+				return false;
+		} else if (!dateOfExectuon.equals(other.dateOfExectuon))
+			return false;
+		if (description == null) {
+			if (other.description != null)
+				return false;
+		} else if (!description.equals(other.description))
+			return false;
+		if (id != other.id)
+			return false;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		if (reporter == null) {
+			if (other.reporter != null)
+				return false;
+		} else if (!reporter.equals(other.reporter))
+			return false;
+		if (status == null) {
+			if (other.status != null)
+				return false;
+		} else if (!status.equals(other.status))
+			return false;
+		return true;
 	}
 	
 	

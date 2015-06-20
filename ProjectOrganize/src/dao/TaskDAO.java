@@ -1,9 +1,10 @@
 package dao;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 
 import javax.ejb.Singleton;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
@@ -11,7 +12,9 @@ import javax.persistence.TypedQuery;
 
 import models.Project;
 import models.Task;
+import models.TaskHistory;
 import models.User;
+import services.UserContext;
 
 @Singleton
 public class TaskDAO {
@@ -19,6 +22,9 @@ public class TaskDAO {
 	@PersistenceContext
 	private EntityManager em;
 
+	@Inject
+	private UserContext userContext;
+	
 	public TaskDAO() {
 	}
 
@@ -69,16 +75,23 @@ public class TaskDAO {
 
 	//User
 	// ne raboti
-	public int assignUserToTask(Task task, User user) {
+	public void assignUserToTask(Task task, User user) {
 		System.out.println("vleznah");
-		Collection<Task> tasksForUser = getAllTaskForUser(user);
-		long taskId = task.getId();
-		String textQuery = "UPDATE Task t SET t.users = :moreUsers WHERE t.id = :taskId";
-		TypedQuery<Task> query = em.createQuery(textQuery, Task.class)
-				.setParameter("moreUsers", tasksForUser)
-				.setParameter("taskId", taskId);
+		user.getTasks().add(task);
+		task.getUsers().add(user);
+		em.persist(task);
+		
+		System.out.println("all users for current task: "+task.getUsers());
+		System.out.println("all tasks for current user: "+user.getTasks());
 
-		return query.executeUpdate();
+//		Collection<Task> tasksForUser = getAllTaskForUser(user);
+//		long taskId = task.getId();
+//		String textQuery = "UPDATE Task t SET t.users = :moreUsers WHERE t.id = :taskId";
+//		TypedQuery<Task> query = em.createQuery(textQuery, Task.class)
+//				.setParameter("moreUsers", tasksForUser)
+//				.setParameter("taskId", taskId);
+//
+//		return query.executeUpdate();
 
 	}
 
@@ -118,7 +131,12 @@ public class TaskDAO {
 
 	// Update information to database
 	public void editTask(Task task) {
+		Task t = this.findById(task.getId());
+		boolean saveHistory = !t.equals(task);
 		em.merge(task);
+		if (saveHistory) {
+			this.saveHistory(task);
+		}
 	}
 
 	public Collection<Task> getMarkedTasks(User user) {
@@ -131,6 +149,13 @@ public class TaskDAO {
 		} catch (NoResultException e){
 			return null;
 		}
+	}
+	
+	private void saveHistory(Task task){ 
+		TaskHistory history = new TaskHistory(task);
+		history.setEditor(userContext.getCurrentUser());
+		history.setUpdateDate(new Date());
+		em.persist(history); 
 	}
 
 }

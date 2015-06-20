@@ -1,5 +1,6 @@
 package services;
 
+import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.List;
@@ -7,11 +8,14 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -53,6 +57,17 @@ public class UserManager {
         return Response.ok().build();
     }
 	
+	@GET
+	@Path("/logout")
+	public void logoutUser(@Context HttpServletRequest request, @Context HttpServletResponse response) {
+		request.getSession().invalidate();
+		try {
+			response.sendRedirect(request.getContextPath() + "/index.html");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}	
+	}
+	
 	@Path("/allUsers")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
@@ -89,6 +104,7 @@ public class UserManager {
 		userDao.changeUserRole(u);
 		return Response.ok().build();
 	}
+	
 	
 	
 }

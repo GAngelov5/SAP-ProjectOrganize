@@ -61,7 +61,6 @@ public class TaskManager {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response assignTask(User user, @PathParam("taskId") int taskId) {
 		Task t = taskDao.findById(taskId);
-		System.out.println(t.getName());
 		User u = userDao.findUserByName(user.getUsername());
 		if (u != null) {
 			taskDao.assignUserToTask(t, u);
