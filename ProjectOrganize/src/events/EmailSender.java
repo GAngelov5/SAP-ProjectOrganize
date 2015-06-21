@@ -22,12 +22,12 @@ public class EmailSender {
 	@EJB
 	private TaskDAO taskDao;
 	
-	@Schedule(dayOfWeek = "Sun", hour = "16", minute = "36")
+	@Schedule(dayOfWeek = "Mon", hour = "1", minute = "19")
 	public void sendAutomaticEmail(Task task, User user) {
-		String txt = "Some of the attributes of this task with id"
-				+ task.getId() + "has beed changed by" + user.getUsername();
+		String txt = "Some of the attributes of this task with id "
+				+ task.getId() + " has beed changed by " + user.getUsername();
 		String to = taskDao.getEmailOfExecutor(task);
-		createMessage("Modification of current Task", txt, to);
+		createMessage("Modification of current Task", txt, "galin.angelov5@gmail.com");
 	}
 
 	public void createMessage(String subject, String text, String to) {
@@ -35,31 +35,22 @@ public class EmailSender {
 
 		String host = "smtp.mail.yahoo.com";
 
-		Properties properties = System.getProperties();
+		Properties props = System.getProperties();
+        props.put("mail.smtp.starttls.enable", "true");
+        props.put("mail.smtp.host", host);
+        props.put("mail.smtp.port", "587");
+        props.put("mail.smtp.auth", "true");
 
-		properties.setProperty("mail.smtp.host", host);
-
-		Session session = Session.getDefaultInstance(properties);
+		Session session = Session.getDefaultInstance(props, new SmtpAuthenticator());
 
 		try {
-			// Create a default MimeMessage object.
-			MimeMessage message = new MimeMessage(session);
-
-			// Set From: header field of the header.
+			Message message = new MimeMessage(session);
 			message.setFrom(new InternetAddress(from));
-
-			// Set To: header field of the header.
 			message.addRecipient(Message.RecipientType.TO, new InternetAddress(
 					to));
-
 			message.setSubject(subject);
-
-			// Now set the actual message
 			message.setText(text);
-
-			// Send message
 			Transport.send(message);
-			System.out.println("Sent message successfully....");
 		} catch (MessagingException mex) {
 			mex.printStackTrace();
 		}
