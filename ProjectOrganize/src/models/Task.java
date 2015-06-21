@@ -9,8 +9,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -37,12 +35,8 @@ public class Task implements Serializable{
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date dateOfExectuon;
 	
-	@ManyToMany
-	@JoinTable(
-		      name="Task_User",
-		      joinColumns={@JoinColumn(name="TaskId", referencedColumnName="id")},
-		      inverseJoinColumns={@JoinColumn(name="UserId", referencedColumnName="id")})
-	private List<User> users;
+	@ManyToOne
+	private User executor;
 	
 	private String status;
 	
@@ -92,12 +86,12 @@ public class Task implements Serializable{
 		this.dateOfExectuon = dateOfExectuon;
 	}
 
-	public List<User> getUsers() {
-		return users;
+	public User getExecutor() {
+		return executor;
 	}
 
-	public void setUsers(List<User> users) {
-		this.users = users;
+	public void setExecutor(User executor) {
+		this.executor = executor;
 	}
 
 	public String getStatus() {

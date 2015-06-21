@@ -2,6 +2,7 @@ package dao;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 import javax.ejb.Singleton;
 import javax.inject.Inject;
@@ -24,7 +25,7 @@ public class TaskDAO {
 
 	@Inject
 	private UserContext userContext;
-	
+
 	public TaskDAO() {
 	}
 
@@ -73,31 +74,15 @@ public class TaskDAO {
 		return t;
 	}
 
-	//User
-	// ne raboti
+	// 
 	public void assignUserToTask(Task task, User user) {
-		System.out.println("vleznah");
-		user.getTasks().add(task);
-		task.getUsers().add(user);
-		em.persist(task);
-		
-		System.out.println("all users for current task: "+task.getUsers());
-		System.out.println("all tasks for current user: "+user.getTasks());
-
-//		Collection<Task> tasksForUser = getAllTaskForUser(user);
-//		long taskId = task.getId();
-//		String textQuery = "UPDATE Task t SET t.users = :moreUsers WHERE t.id = :taskId";
-//		TypedQuery<Task> query = em.createQuery(textQuery, Task.class)
-//				.setParameter("moreUsers", tasksForUser)
-//				.setParameter("taskId", taskId);
-//
-//		return query.executeUpdate();
-
+		task.setExecutor(user);
+		em.persist(user);
 	}
 
-	public Collection<Task> getAllTaskForUser(User u) {
-		int userId = u.getId();
-		String textQuery = "SELECT t FROM Task t WHERE t.id = :userId";
+	public Collection<Task> getAllTaskForUser(User user) {
+		int userId = user.getId();
+		String textQuery = "SELECT t FROM Task t WHERE t.executor.id = :userId";
 		TypedQuery<Task> query = em.createQuery(textQuery, Task.class)
 				.setParameter("userId", userId);
 
@@ -118,10 +103,11 @@ public class TaskDAO {
 		return query.executeUpdate();
 	}
 
+	//
 	public Long findUserTaskNumberByStatus(Long userId, String status) {
-		String textQuery = "SELECT count(task.id) FROM Task task "
-				+ "where task.assignee.id =:userId and "
-				+ "issue.status.name=:status";
+		String textQuery = "SELECT COUNT(task.id) FROM Task t "
+				+ "WHERE t.executor.id =:userId AND "
+				+ "t.status.name=:status";
 		TypedQuery<Long> query = em.createQuery(textQuery, Long.class);
 		query.setParameter("userId", userId);
 		query.setParameter("status", status);
@@ -130,12 +116,12 @@ public class TaskDAO {
 	}
 
 	// Update information to database
-	public void editTask(Task task) {
-		Task t = this.findById(task.getId());
-		boolean saveHistory = !t.equals(task);
-		em.merge(task);
+	public void editTask(Task modifiedTask) {
+		Task task = this.findById(modifiedTask.getId());
+		boolean saveHistory = !task.equals(modifiedTask);
+		em.merge(modifiedTask);
 		if (saveHistory) {
-			this.saveHistory(task);
+			this.saveUpdatedTask(modifiedTask);
 		}
 	}
 
@@ -143,19 +129,52 @@ public class TaskDAO {
 		String txtQuery = "SELECT t From Task t WHERE t.reporter.id = :userId";
 		TypedQuery<Task> query = em.createQuery(txtQuery, Task.class)
 				.setParameter("userId", user.getId());
-		
+
 		try {
 			return query.getResultList();
-		} catch (NoResultException e){
+		} catch (NoResultException e) {
 			return null;
 		}
 	}
-	
-	private void saveHistory(Task task){ 
+
+	private void saveUpdatedTask(Task task) {
 		TaskHistory history = new TaskHistory(task);
 		history.setEditor(userContext.getCurrentUser());
 		history.setUpdateDate(new Date());
-		em.persist(history); 
+		em.persist(history);
+	}
+
+	public List<TaskHistory> getAllUpdatesForTask(int taskId) {
+		String txtQuery = "SELECT t From TaskHistory t WHERE t.currentTask.id = :taskId";
+		TypedQuery<TaskHistory> query = em.createQuery(txtQuery,
+				TaskHistory.class).setParameter("taskId", taskId);
+
+		try {
+			return query.getResultList();
+		} catch (NoResultException e) {
+			return null;
+		}
+	}
+
+	public int cleanHistory(int taskId) {
+		String textQuery = "DELETE FROM TaskHistory t WHERE t.currentTask.id =: taskId";
+		TypedQuery<TaskHistory> query = em.createQuery(textQuery,
+				TaskHistory.class).setParameter("taskId", taskId);
+		return query.executeUpdate();
+	}
+
+	public String getEmailOfExecutor(Task t) {
+		String textQuery = "SELECT t FROM Task t WHERE t.id =: taskId";
+		TypedQuery<Task> query = em.createQuery(textQuery, Task.class)
+				.setParameter("taskId", t.getId());
+		
+		try {
+			return query.getSingleResult().getExecutor().getEmail();
+		} catch (NoResultException e) {
+			return null;
+		}
+		
+		
 	}
 
 }

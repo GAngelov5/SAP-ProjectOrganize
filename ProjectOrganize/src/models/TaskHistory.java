@@ -13,9 +13,11 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.xml.bind.annotation.XmlRootElement;
 
 @Entity
 @Table(name = "TaskHistory")
+@XmlRootElement
 public class TaskHistory implements Serializable{
 	
 	private static final long serialVersionUID = 2481290208626581511L;
@@ -33,6 +35,18 @@ public class TaskHistory implements Serializable{
 	
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date updateDate;
+	
+	private String title;
+	
+	private String description;
+	
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date executionDate;
+	
+	@OneToOne
+	private User user;
+	
+	private String status;
 
 	public TaskHistory() {};
 	
@@ -63,6 +77,31 @@ public class TaskHistory implements Serializable{
 	public void setUpdateDate(Date updateDate) {
 		this.updateDate = updateDate;
 	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+	
 	
 	
 	

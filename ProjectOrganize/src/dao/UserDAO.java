@@ -10,7 +10,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
 import models.Role;
-import models.Task;
 import models.User;
 
 @Singleton

@@ -2,11 +2,13 @@ package services;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -18,10 +20,12 @@ import javax.ws.rs.core.Response;
 import models.Comment;
 import models.Status;
 import models.Task;
+import models.TaskHistory;
 import models.User;
 import dao.CommentDAO;
 import dao.TaskDAO;
 import dao.UserDAO;
+import events.EmailSender;
 
 @Stateless
 @Path("/task")
@@ -35,6 +39,9 @@ public class TaskManager {
 	
 	@EJB
 	private CommentDAO commentDao;
+	
+	@EJB
+	private EmailSender emailSender;
 	
 	@Inject
 	private UserContext userContext;
@@ -83,13 +90,6 @@ public class TaskManager {
 		return taskDao.getAllTasks();
 	}
 	
-	@POST
-	@Path("/edit")
-	@Consumes(MediaType.APPLICATION_JSON)
-	public Response editTask(Task task) { 
-		taskDao.editTask(task);
-		return Response.ok().build();
-	}
 	
 	
 	//Changing status of task INITIAL -> IN_PROGRESS
@@ -149,6 +149,29 @@ public class TaskManager {
 	public Collection<Task> getMarkedTasksForUser() {
 		return taskDao.getMarkedTasks(userContext.getCurrentUser());
 	}
+
 	
+	@POST
+	@Path("/edit")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response editTask(Task task) { 
+		taskDao.editTask(task);
+		emailSender.sendAutomaticEmail(task, userContext.getCurrentUser());
+		return Response.ok().build();
+	}
 	
+	@GET
+	@Path("/allUpdates/{taskId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<TaskHistory> getAllUpdatesForTask(@PathParam("taskId") int taskId) {
+		return taskDao.getAllUpdatesForTask(taskId);
+	}
+	
+	@DELETE
+	@Path("/cleanHistory/{taskId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response cleanTaskHistory(@PathParam("taskId") int taskId) {
+		taskDao.cleanHistory(taskId);
+		return Response.ok().build();
+	}
 }
