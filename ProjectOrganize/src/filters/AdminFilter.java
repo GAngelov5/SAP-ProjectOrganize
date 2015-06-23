@@ -19,8 +19,8 @@ import services.UserContext;
 /**
  * Servlet Filter implementation class AdminFilter
  */
-@WebFilter(urlPatterns = { "/rest/admin/*", "/adminPanel.html",
-		"/rest/task/admin/*", "/rest/user/admin/*" })
+@WebFilter(urlPatterns = { "/rest/admin/*", "/rest/task/admin/*",
+		"/rest/user/admin/*" })
 public class AdminFilter implements Filter {
 
 	@Inject

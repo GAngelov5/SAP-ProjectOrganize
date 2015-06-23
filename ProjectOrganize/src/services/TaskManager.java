@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.ejb.Timer;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -54,6 +55,7 @@ public class TaskManager {
 		return taskDao.findById(id);
 	}
 	
+	//admin
 	@POST
 	@Path("/newTask")
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -135,12 +137,13 @@ public class TaskManager {
 	//Mark important tasks
 	@POST
 	@Path("/admin/markTask/{taskId}")
-	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
 	public Response markImportantTask(@PathParam("taskId") int taskId) {
 		Task t = taskDao.findById(taskId);
 		t.setReporter(userContext.getCurrentUser());
 		taskDao.editTask(t);
 		return Response.ok().build();
+		
 	}
 	
 	@GET
@@ -155,8 +158,11 @@ public class TaskManager {
 	@Path("/edit")
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response editTask(Task task) { 
-		taskDao.editTask(task);
-		emailSender.sendAutomaticEmail(task, userContext.getCurrentUser());
+		if (taskDao.editTask(task)) {
+			long currentTime = System.currentTimeMillis();
+			Timer timer = emailSender.setTimer(currentTime);
+			emailSender.sendAutomaticEmail(timer, task, userContext.getCurrentUser());			
+		}
 		return Response.ok().build();
 	}
 	

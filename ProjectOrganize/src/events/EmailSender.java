@@ -1,10 +1,16 @@
 package events;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Properties;
 
+import javax.annotation.Resource;
 import javax.ejb.EJB;
-import javax.ejb.Schedule;
 import javax.ejb.Singleton;
+import javax.ejb.Timeout;
+import javax.ejb.Timer;
+import javax.ejb.TimerConfig;
+import javax.ejb.TimerService;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
@@ -22,12 +28,28 @@ public class EmailSender {
 	@EJB
 	private TaskDAO taskDao;
 	
-	@Schedule(dayOfWeek = "Mon", hour = "1", minute = "19")
-	public void sendAutomaticEmail(Task task, User user) {
+	@Resource
+	TimerService timerService;
+	
+	@Timeout
+	public void sendAutomaticEmail(Timer timer, Task task, User user) {
+		System.out.println("Time remaining: " + timer.getTimeRemaining());
 		String txt = "Some of the attributes of this task with id "
 				+ task.getId() + " has beed changed by " + user.getUsername();
 		String to = taskDao.getEmailOfExecutor(task);
-		createMessage("Modification of current Task", txt, "galin.angelov5@gmail.com");
+		createMessage("Modification of current Task", txt, "galin.tester@yahoo.com");
+	}
+	
+	public Timer setTimer(long duration) {
+		Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.HOUR, 0);
+		cal.set(Calendar.MINUTE, 12);
+		Date currentDate = cal.getTime();
+		System.out.println("CurrentDate: " + currentDate);
+		System.out.println("CurrentDate in millisec: " + currentDate.getTime());
+		System.out.println("time until its send: " + ((currentDate.getTime()) - duration)/1000);
+		Timer timer = timerService.createSingleActionTimer(currentDate.getTime() - duration, new TimerConfig());
+		return timer;
 	}
 
 	public void createMessage(String subject, String text, String to) {

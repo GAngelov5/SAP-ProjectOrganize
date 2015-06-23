@@ -36,6 +36,7 @@ public class Task implements Serializable{
 	private Date dateOfExectuon;
 	
 	@ManyToOne
+	@JoinColumn(name="ExecutorID")
 	private User executor;
 	
 	private String status;
@@ -145,8 +146,6 @@ public class Task implements Serializable{
 				+ ((description == null) ? 0 : description.hashCode());
 		result = prime * result + id;
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result
-				+ ((reporter == null) ? 0 : reporter.hashCode());
 		result = prime * result + ((status == null) ? 0 : status.hashCode());
 		return result;
 	}
@@ -181,11 +180,6 @@ public class Task implements Serializable{
 			if (other.name != null)
 				return false;
 		} else if (!name.equals(other.name))
-			return false;
-		if (reporter == null) {
-			if (other.reporter != null)
-				return false;
-		} else if (!reporter.equals(other.reporter))
 			return false;
 		if (status == null) {
 			if (other.status != null)

@@ -116,13 +116,16 @@ public class TaskDAO {
 	}
 
 	// Update information to database
-	public void editTask(Task modifiedTask) {
+	public boolean editTask(Task modifiedTask) {
+		boolean flag = false;
 		Task task = this.findById(modifiedTask.getId());
 		boolean saveHistory = !task.equals(modifiedTask);
 		em.merge(modifiedTask);
 		if (saveHistory) {
 			this.saveUpdatedTask(modifiedTask);
+			flag = true;
 		}
+		return flag;
 	}
 
 	public Collection<Task> getMarkedTasks(User user) {

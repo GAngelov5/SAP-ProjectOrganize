@@ -27,7 +27,7 @@ public class TaskHistory implements Serializable{
 	private int id;
 	
 	@ManyToOne
-	@JoinColumn(name= "changes")
+	@JoinColumn(name= "TaskID")
 	private Task currentTask;
 	
 	@OneToOne
@@ -52,6 +52,7 @@ public class TaskHistory implements Serializable{
 	
 	public TaskHistory(Task t){
 		this.currentTask = t;
+		
 	}
 	
 	public Task getTask() {
