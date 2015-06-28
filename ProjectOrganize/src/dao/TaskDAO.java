@@ -105,7 +105,7 @@ public class TaskDAO {
 
 	//
 	public Long findUserTaskNumberByStatus(Long userId, String status) {
-		String textQuery = "SELECT COUNT(task.id) FROM Task t "
+		String textQuery = "SELECT COUNT(t.id) FROM Task t "
 				+ "WHERE t.executor.id =:userId AND "
 				+ "t.status.name=:status";
 		TypedQuery<Long> query = em.createQuery(textQuery, Long.class);
