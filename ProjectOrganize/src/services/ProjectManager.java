@@ -15,8 +15,11 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import models.Project;
+import models.Status;
+import models.Task;
 import models.User;
 import dao.ProjectDAO;
+import dao.TaskDAO;
 import dao.UserDAO;
 
 //Admin can do this
@@ -30,6 +33,9 @@ public class ProjectManager {
 	@EJB
 	private UserDAO userDao;
 	
+	@EJB
+	private TaskDAO taskDao;
+	
 	@POST
 	@Path("/createProject")
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -37,6 +43,7 @@ public class ProjectManager {
 		projectDao.addProject(project);
 		return Response.ok().build();
 	}
+	
 	
 	@POST
 	@Path("/addMember")

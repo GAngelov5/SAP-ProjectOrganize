@@ -64,7 +64,7 @@ public class UserDAO {
 
 	public int changeUserRole(User u) {
 		int userId = u.getId();
-		String textQuery = "UPDATE User u SET t.role = :adminRole WHERE u.id =:userId";
+		String textQuery = "UPDATE User u SET u.role = :adminRole WHERE u.id =:userId";
 		TypedQuery<User> query = em.createQuery(textQuery, User.class)
 				.setParameter("userId", userId)
 				.setParameter("adminRole", Role.ADMINISTRATOR);

@@ -15,6 +15,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -58,7 +59,7 @@ public class TaskManager {
 	@POST
 	@Path("/newTask")
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response createNewTask(Task newTask) {
+	public Response createNewTask(Task newTask, @QueryParam("ProjectId") int projectId) {
 		newTask.setStatus(Status.INITIAL);
 		taskDao.addTask(newTask);
 		return Response.ok().build();
@@ -142,14 +143,14 @@ public class TaskManager {
 	}
 
 	// Mark important tasks
-	@POST
+	@GET
 	@Path("/admin/markTask/{taskId}")
-	@Consumes(MediaType.APPLICATION_JSON)
-	public Response markImportantTask(@PathParam("taskId") int taskId) {
+	@Produces(MediaType.APPLICATION_JSON)
+	public Task markImportantTask(@PathParam("taskId") int taskId) {
 		Task t = taskDao.findById(taskId);
 		t.setReporter(userContext.getCurrentUser());
 		taskDao.editTask(t);
-		return Response.ok().build();
+		return t;
 
 	}
 

@@ -36,20 +36,21 @@ public class EmailSender {
 		System.out.println("Time remaining: " + timer.getTimeRemaining());
 		String txt = "Some of the attributes of this task with id "
 				+ task.getId() + " has beed changed by " + user.getUsername();
-		String to = taskDao.getEmailOfExecutor(task);
+		//String to = taskDao.getEmailOfExecutor(task);
 		createMessage("Modification of current Task", txt, "galin.tester@yahoo.com");
 	}
 	
 	public Timer setTimer(long duration) {
 		Calendar cal = Calendar.getInstance();
-		cal.set(Calendar.HOUR, 0);
-		cal.set(Calendar.MINUTE, 12);
+		cal.set(Calendar.HOUR, 20);
+		cal.set(Calendar.MINUTE, 0);
 		Date currentDate = cal.getTime();
 		System.out.println("CurrentDate: " + currentDate);
 		System.out.println("CurrentDate in millisec: " + currentDate.getTime());
 		System.out.println("time until its send: " + ((currentDate.getTime()) - duration)/1000);
 		Timer timer = timerService.createSingleActionTimer(currentDate.getTime() - duration, new TimerConfig());
-		return timer;
+		Timer timer1 = timerService.createSingleActionTimer(duration + 10000, new TimerConfig());
+		return timer1;
 	}
 
 	public void createMessage(String subject, String text, String to) {

@@ -26,22 +26,16 @@ public class AdminFilter implements Filter {
 	@Inject
 	private UserContext userContext;
 
-	public AdminFilter() {
-		// TODO Auto-generated constructor stub
-	}
-
-	public void destroy() {
-	}
-
+	@Override
 	public void doFilter(ServletRequest req, ServletResponse resp,
 			FilterChain chain) throws IOException, ServletException {
 		if (userContext.getCurrentUser() != null) {
 			String role = userContext.getCurrentUser().getRole();
-			if (role != "" && role == Role.ADMINISTRATOR) {
+			if (role != "" && role.equals(Role.ADMINISTRATOR)) {
 				chain.doFilter(req, resp);
+				return;
 			}
 		}
-
 		HttpServletRequest httpServletRequest = (HttpServletRequest) req;
 		HttpServletResponse httpServletResponse = (HttpServletResponse) resp;
 		String redirectURL = httpServletRequest.getContextPath()
@@ -49,7 +43,11 @@ public class AdminFilter implements Filter {
 		httpServletResponse.sendRedirect(redirectURL);
 	}
 
+	@Override
 	public void init(FilterConfig fConfig) throws ServletException {
 	}
 
+	@Override
+	public void destroy() {
+	}
 }

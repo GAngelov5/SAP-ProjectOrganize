@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Bootstrap Example</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+  	<style>
+		body {
+			background-image: url("http://www.vrmsol.com/wp-content/uploads/2013/03/puzzle.jpg");
+			background-repeat: no-repeat;
+			background-size: 100%;
+		}
+		h1 {
+			font-style: italic;
+			font-size: 90px;
+			text-align:center;
+			margin-bottom: 100px;
+		}
+		#signInForm{
+			margin-left: auto;
+			margin-right: auto;
+			width: 40%;			
+		}
+		table, td, ul, h3{
+			border: 1px solid blue;
+			background-color: AliceBlue ;
+		}
+		th {
+			background-color: LightSteelBlue  ;
+		}
+		li {
+			font-size: 30px;
+		}
+
+		</style>
+		<script type="text/javascript">
+        drawTable();
+
+        $.ajax({
+            url: 'rest/user/currentUser',
+            type: "GET",
+            dataType : "text"
+        });
+	
+    function drawTable() {
+        $.ajax({
+            url : 'rest/task/allTasks',
+            type : "GET",
+            dataType : "json",
+            success : function(data) {
+                renderTable(data);
+            }
+        });
+    }
+
+    function renderTable(data) {
+        $("#projectsTable tr").remove();
+        var tasks = data.task;
+        for (var i = 0; i < tasks.length; i++) {
+            renderRow(tasks[i]);
+        }
+    }
+
+    function renderRow(rowData) {
+        var row = $("<tr />")
+        $("#projectsTable").append(row);
+        row.append($("<td>" + rowData.id + "</td>"));
+        row.append($("<td>" + rowData.name + "</td>"));
+        row.append($("<td>" + rowData.project + "</td>"));
+        row.append($("<td>" + rowData.executor + "</td>"));
+        row.append($("<td>" + rowData.description + "</td>"));
+        row.append($("<td>" + rowData.reporter + "</td>"));
+        row.append($("<td>" + rowData.updates + "</td>"));
+        row.append($("<td>" + rowData.status + "</td>"));        
+/*         if (isUserAuthenticated && rowData.amount > 0) {
+            var borrowTd = $("<td />");
+            var link = $("<button>Borrow</button>");
+            borrowTd.append(link);
+            row.append(borrowTd);
+            link.click(function() {
+                $.ajax({
+                    url: 'rest/book/borrow?bookId=' + rowData.id,
+                    type: "PUT",
+                    dataType: "json",
+                    success: drawTableWithBooks
+                });
+            });
+        } else { */
+            row.append($("<td/>"));
+       //}
+    }
+    
+    function logout() {
+    	$.ajax({
+            url: 'rest/user/logout',
+            type: "GET",
+            dataType: "text"
+        }).always(function(data){
+        	window.location.replace("login.html");
+        });
+    }
+    function createTask() {
+    	window.location.replace("createTask.html");
+    	//$("#projectsInfo").attr("action", "createTask.html");
+        }
+    
+
+</script>
+</head>
+<body>
+<div class="container">
+  <h1>Tasks</h1>
+  <ul class="nav nav-pills nav-justified">
+  	<li><a onclick="createTask()">Create task</a></li>
+  </ul>
+</div>
+<div id="projectsInfo" class="container">
+  <h3>Not assigned tasks:</h3>     
+  <table id="projectsTable" class="table table-striped">
+      <tr>
+		<th>ID<th>
+        <th>Name</th>
+		<th>Project</th>
+        <th>Assigned to</th>
+        <th>Description</th>
+		<th>Reviewer</th>
+        <th>Updates</th>
+		<th>Status</th>
+      </tr>
+  </table>
+</div>
+
+</body>
+</html>

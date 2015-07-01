@@ -14,6 +14,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -87,20 +88,11 @@ public class UserManager {
 		return userContext.getCurrentUser().getUsername();
 	}
 	
-	//admin can do it
-	@Path("/createUser")
-	@POST
-	@Consumes(MediaType.APPLICATION_JSON)
-	public Response createNewUser(User u) {
-		userDao.addUser(u);
-		return Response.ok().build();
-	}
-	
 	//admin make regular user administrator
-	@Path("/admin/makeAdmin")
-	@POST
-	@Consumes(MediaType.APPLICATION_JSON)
-	public Response makeUserAdmin(User u) {
+	@Path("/admin/makeAdmin/{userId}")
+	@GET
+	public Response makeUserAdmin(@PathParam("userId") int userId) {
+		User u = userDao.findUserById(userId);
 		userDao.changeUserRole(u);
 		return Response.ok().build();
 	}
